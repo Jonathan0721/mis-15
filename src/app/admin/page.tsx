@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { collection, onSnapshot, query, orderBy, deleteDoc, doc } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { Lock, Trash2, Image as ImageIcon, Users, Heart, ShieldCheck, ArrowLeft } from "lucide-react";
 
 interface Post {
@@ -49,20 +48,11 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeletePost = async (postId: string, imageUrl: string) => {
+  const handleDeletePost = async (postId: string) => {
     if (!confirm("¿Seguro que deseas eliminar esta publicación permanentemente?")) return;
 
     try {
       await deleteDoc(doc(db, "posts", postId));
-
-      if (imageUrl.includes("firebasestorage")) {
-        try {
-          const imageRef = ref(storage, imageUrl);
-          await deleteObject(imageRef);
-        } catch (err) {
-          console.warn("No se pudo borrar del Storage", err);
-        }
-      }
     } catch (err) {
       console.error("Error eliminando post:", err);
       alert("Hubo un error al eliminar.");
@@ -191,7 +181,7 @@ export default function AdminPage() {
 
                         <div className="p-3 pt-0 border-t border-white/5 mt-2">
                           <button
-                              onClick={() => handleDeletePost(post.id, post.imageUrl)}
+                              onClick={() => handleDeletePost(post.id)}
                               className="w-full py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
