@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Muro de Recuerdos - Quinceañera
 
-## Getting Started
+Aplicación web para fiestas de 15 años donde los invitados pueden compartir fotos, videos y mensajes en tiempo real.
 
-First, run the development server:
+## Características
+
+- 📱 **Diseño Mobile-First**: Estética iOS con glassmorphism y modo oscuro elegante
+- 📸 **Compresión de Imágenes**: Las fotos se comprimen localmente antes de subir (máx 1200px, calidad 0.8)
+- ❤️ **Sistema de Likes**: Los invitados pueden dar me gusta a las publicaciones
+- 👤 **Identificación de Invitados**: Registro express con nombre y seguimiento de presencia
+- 🔐 **Panel de Administración**: Dashboard protegido con PIN para gestionar contenido
+- 🗑️ **Moderación**: Eliminación de publicaciones inapropiadas desde el admin
+- ⚡ **Tiempo Real**: Actualizaciones instantáneas usando Firestore onSnapshot
+
+## Configuración
+
+### 1. Variables de Entorno
+
+Crea un archivo `.env.local` en la raíz del proyecto con tus credenciales de Firebase:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=tu_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=tu_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=tu_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=tu_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=tu_app_id
+```
+
+### 2. Reglas de Firebase
+
+**Firestore Rules:**
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+**Storage Rules:**
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+## Uso
+
+### Iniciar el servidor de desarrollo
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Panel de Administración
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Accede al dashboard de administración en `/admin` usando el PIN: `1515`
 
-## Learn More
+El panel permite:
+- Ver estadísticas (recuerdos, invitados, likes)
+- Listar todos los invitados registrados
+- Eliminar publicaciones inapropiadas
 
-To learn more about Next.js, take a look at the following resources:
+## Estructura del Proyecto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/
+│   ├── admin/page.tsx          # Dashboard de administración
+│   ├── page.tsx                # Página principal con feed
+│   ├── layout.tsx              # Layout raíz
+│   └── globals.css             # Estilos globales
+├── components/
+│   ├── PhotoCard.tsx           # Tarjeta de recuerdo
+│   ├── UploadModal.tsx         # Modal para subir recuerdos
+│   └── GuestModal.tsx          # Modal de registro de invitados
+└── lib/
+    └── firebase.ts             # Configuración de Firebase
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tecnologías
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 (App Router)
+- Firebase (Firestore + Storage)
+- Tailwind CSS 4
+- Framer Motion
+- browser-image-compression
+- canvas-confetti
+- Lucide React
